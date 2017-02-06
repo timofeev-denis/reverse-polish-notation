@@ -23,12 +23,42 @@ public class RPNTest {
     }
 
     @Test
-    public void testBrackets() {
-        assertEquals("23+4*", RPN.make("(2+3)*4"));
+    public void testExpressionWithBrackets() {
+        assertEquals("23+4*5/", RPN.make("(2+3)*4/5"));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testIncorrectBrackets() {
         RPN.make("2+3)*4");
+    }
+
+    @Test
+    public void testAddition() {
+        assertEquals(3.0, RPN.calculate("12+"));
+    }
+
+    @Test
+    public void testSubtraction() {
+        assertEquals(3.0, RPN.calculate("52-"));
+    }
+
+    @Test
+    public void testMultiplication() {
+        assertEquals(10.0, RPN.calculate("52*"));
+    }
+
+    @Test
+    public void testDivision() {
+        assertEquals(2.5, RPN.calculate("52/"));
+    }
+
+    @Test
+    public void testComplexExpresion() {
+        assertEquals(4.0, RPN.calculate("23+4*5/"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCalculateInvalidExpression() {
+        RPN.calculate("2&2");
     }
 }

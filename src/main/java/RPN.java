@@ -3,17 +3,17 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Author: timofeevdv
  * Date: 06.02.2017
  */
 public class RPN {
-    private static Stack<Character> stack;
     private static Map<Character, Integer> operators;
 
     static {
-        stack = new Stack<>();
         operators = new HashMap<>();
         operators.put('(', 1);
         operators.put(')', 1);
@@ -25,6 +25,7 @@ public class RPN {
 
     public static String make(String expression) {
         checkExpression(expression);
+        Stack<Character> stack = new Stack<>();
         StringBuilder result = new StringBuilder();
         for (Character c : expression.toCharArray()) {
             // Скобки
@@ -59,9 +60,60 @@ public class RPN {
         return result.toString();
     }
 
+    private static void checkRPNExpression(String expression) {
+        Pattern pattern = Pattern.compile("[0-9\\+\\-*/]+");
+        Matcher matcher = pattern.matcher(expression);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Неизвестный оператор в выражении " + expression);
+        }
+    }
     private static void checkExpression(String expression) {
-        if( StringUtils.countMatches(expression, "(") != StringUtils.countMatches(expression, ")") ) {
+        if (StringUtils.countMatches(expression, "(") != StringUtils.countMatches(expression, ")")) {
             throw new IllegalArgumentException("Некорректное выражение");
+        }
+    }
+
+    /**
+     * Вычисляет выражение, записанное в обратной польской записи
+     *
+     * @param expression выражение, записанное в обратной польской записи
+     * @return Результат вычислений
+     */
+    public static Double calculate(String expression) {
+        checkRPNExpression(expression);
+        Stack<Double> stack = new Stack<>();
+        for (Character c : expression.toCharArray()) {
+            if (operators.get(c) == null) {
+                stack.push(new Double(Character.digit(c, 10)));
+            } else {
+                Double var2 = stack.pop();
+                Double var1 = stack.pop();
+                Double result = evaluate(var1, var2, c);
+                stack.push(result);
+            }
+        }
+        return stack.pop();
+    }
+
+    /**
+     * Выполняет арифметическую операцию
+     * @param var1
+     * @param var2
+     * @param operator
+     * @return
+     */
+    private static Double evaluate(Double var1, Double var2, Character operator) {
+        switch (operator) {
+            case '+':
+                return var1 + var2;
+            case '-':
+                return var1 - var2;
+            case '*':
+                return var1 * var2;
+            case '/':
+                return var1 / var2;
+            default:
+                throw new IllegalArgumentException("Неизвестный оператор: " + operator);
         }
     }
 }
