@@ -26,4 +26,9 @@ public class RPNTest {
     public void testBrackets() {
         assertEquals("23+4*", RPN.make("(2+3)*4"));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIncorrectBrackets() {
+        RPN.make("2+3)*4");
+    }
 }

@@ -1,3 +1,5 @@
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -22,6 +24,7 @@ public class RPN {
     }
 
     public static String make(String expression) {
+        checkExpression(expression);
         StringBuilder result = new StringBuilder();
         for (Character c : expression.toCharArray()) {
             // Скобки
@@ -54,5 +57,11 @@ public class RPN {
         }
 
         return result.toString();
+    }
+
+    private static void checkExpression(String expression) {
+        if( StringUtils.countMatches(expression, "(") != StringUtils.countMatches(expression, ")") ) {
+            throw new IllegalArgumentException("Некорректное выражение");
+        }
     }
 }
